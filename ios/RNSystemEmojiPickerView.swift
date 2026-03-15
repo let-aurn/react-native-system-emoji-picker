@@ -6,7 +6,7 @@ import UIKit
 /// The keyboard is opened / closed via the `focus()` / `blur()` entry points
 /// that the Objective-C `ViewManager` calls on the main thread.
 @objc(RNSystemEmojiPickerView)
-final class RNSystemEmojiPickerView: UIView {
+public final class RNSystemEmojiPickerView: UIView {
 
   // MARK: - React Native event props
   //
@@ -14,12 +14,12 @@ final class RNSystemEmojiPickerView: UIView {
   // `((NSDictionary) -> Void)` bridges directly from/to `RCTDirectEventBlock`
   // (`void(^)(NSDictionary *body)`) – no React headers needed in Swift.
 
-  @objc var onEmojiSelected: ((NSDictionary) -> Void)?
-  @objc var onOpen: ((NSDictionary) -> Void)?
-  @objc var onClose: ((NSDictionary) -> Void)?
+  @objc public var onEmojiSelected: ((NSDictionary) -> Void)?
+  @objc public var onOpen: ((NSDictionary) -> Void)?
+  @objc public var onClose: ((NSDictionary) -> Void)?
 
   /// When `true` the emoji keyboard is dismissed automatically after selection.
-  @objc var autoHideAfterSelection: Bool = false
+  @objc public var autoHideAfterSelection: Bool = false
 
   // MARK: - Private state
 
@@ -27,7 +27,7 @@ final class RNSystemEmojiPickerView: UIView {
 
   // MARK: - Init
 
-  override init(frame: CGRect) {
+  public override init(frame: CGRect) {
     super.init(frame: frame)
     setUpTextField()
     setUpKeyboardObservers()
@@ -87,12 +87,12 @@ final class RNSystemEmojiPickerView: UIView {
   // MARK: - Imperative API (invoked by the ViewManager on the main thread)
 
   /// Opens the emoji keyboard by making the hidden text field first responder.
-  @objc func focus() {
+  @objc public func focus() {
     textField.becomeFirstResponder()
   }
 
   /// Dismisses the emoji keyboard.
-  @objc func blur() {
+  @objc public func blur() {
     textField.resignFirstResponder()
   }
 
@@ -115,7 +115,7 @@ final class RNSystemEmojiPickerView: UIView {
 
 extension RNSystemEmojiPickerView: UITextFieldDelegate {
 
-  func textField(
+  public func textField(
     _ textField: UITextField,
     shouldChangeCharactersIn range: NSRange,
     replacementString string: String

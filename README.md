@@ -19,8 +19,11 @@ yarn add react-native-system-emoji-picker
 ### iOS — CocoaPods
 
 ```sh
-cd ios && pod install
+bundle install
+cd ios && bundle exec pod install && cd ..
 ```
+
+If your system `pod` command is missing, always run CocoaPods through Bundler (`bundle exec`) in the project that contains the `Gemfile`.
 
 Add the following to your `Podfile` if it isn't there already:
 
@@ -122,9 +125,12 @@ To run it:
 ```sh
 cd example
 npm install
-cd ios && pod install && cd ..
+bundle install
+cd ios && bundle exec pod install && cd ..
 npm run ios   # or: npm run android
 ```
+
+If you see `can't find gem cocoapods ... executable pod`, run `bundle install` in `example` and retry `bundle exec pod install`.
 
 ---
 

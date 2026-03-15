@@ -1,5 +1,6 @@
 #import <React/RCTViewManager.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTLog.h>
 
 // The Swift class is accessible via the pod's auto-generated Swift header.
 // CocoaPods names it "<module_name>-Swift.h" where the module name is the
@@ -33,39 +34,30 @@ RCT_EXPORT_VIEW_PROPERTY(onOpen, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onClose, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(autoHideAfterSelection, BOOL)
 
-// ---------------------------------------------------------------------------
-// Commands
-//
-// Exported via constantsToExport so that JS can look them up with:
-//   UIManager.getViewManagerConfig('RNSystemEmojiPickerView').Commands.focus
-// ---------------------------------------------------------------------------
-
-- (NSDictionary<NSString *, id> *)constantsToExport
+RCT_EXPORT_METHOD(focus:(nonnull NSNumber *)reactTag)
 {
-  return @{
-    @"Commands": @{
-      @"focus": @0,
-      @"blur":  @1,
-    },
-  };
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager,
+                                      NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RNSystemEmojiPickerView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RNSystemEmojiPickerView, got: %@", view);
+      return;
+    }
+    [(RNSystemEmojiPickerView *)view focus];
+  }];
 }
 
-/// Handles commands dispatched from JS via UIManager.dispatchViewManagerCommand.
-- (void)receiveCommand:(UIView *)view
-             commandID:(NSInteger)commandID
-                  args:(NSArray *)args
+RCT_EXPORT_METHOD(blur:(nonnull NSNumber *)reactTag)
 {
-  RNSystemEmojiPickerView *pickerView = (RNSystemEmojiPickerView *)view;
-  switch (commandID) {
-    case 0:
-      [pickerView focus];
-      break;
-    case 1:
-      [pickerView blur];
-      break;
-    default:
-      break;
-  }
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager,
+                                      NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RNSystemEmojiPickerView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RNSystemEmojiPickerView, got: %@", view);
+      return;
+    }
+    [(RNSystemEmojiPickerView *)view blur];
+  }];
 }
 
 @end
