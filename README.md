@@ -115,7 +115,7 @@ interface SystemEmojiPickerHandle {
 
 ## Example app
 
-See [`example/App.tsx`](./example/App.tsx) for a self-contained demo.
+See [`example/App.tsx`](./example/App.tsx) for a self-contained demo inside a full React Native template (iOS and Android projects are included under `example/ios` and `example/android`).
 
 To run it:
 
@@ -123,7 +123,7 @@ To run it:
 cd example
 npm install
 cd ios && pod install && cd ..
-npx react-native run-ios
+npm run ios   # or: npm run android
 ```
 
 ---

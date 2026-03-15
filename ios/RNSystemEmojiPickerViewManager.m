@@ -4,7 +4,11 @@
 // The Swift class is accessible via the pod's auto-generated Swift header.
 // CocoaPods names it "<module_name>-Swift.h" where the module name is the
 // pod name with hyphens replaced by underscores.
+#if __has_include(<react_native_system_emoji_picker/react_native_system_emoji_picker-Swift.h>)
+#import <react_native_system_emoji_picker/react_native_system_emoji_picker-Swift.h>
+#else
 #import "react_native_system_emoji_picker-Swift.h"
+#endif
 
 @interface RNSystemEmojiPickerViewManager : RCTViewManager
 @end
