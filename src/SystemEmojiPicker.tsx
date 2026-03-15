@@ -105,7 +105,15 @@ function dispatchCommand(handle: number, commandName: string): void {
       ? mgr.getViewManagerConfig(NATIVE_VIEW_NAME)
       : null;
 
-  const commandId: number = config?.Commands?.[commandName] ?? 0;
+  const commandId: number | undefined = config?.Commands?.[commandName];
+  if (commandId == null) {
+    if (__DEV__) {
+      console.warn(
+        `react-native-system-emoji-picker: missing native command "${commandName}"`,
+      );
+    }
+    return;
+  }
   UIManager.dispatchViewManagerCommand(handle, commandId, []);
 }
 

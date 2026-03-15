@@ -1,11 +1,5 @@
-import React, { useRef, useState } from 'react';
-import {
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {
   SystemEmojiPicker,
   SystemEmojiPickerHandle,
@@ -20,26 +14,18 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>react-native-system-emoji-picker</Text>
 
-      {lastEmoji != null && (
-        <Text style={styles.emoji}>{lastEmoji}</Text>
-      )}
+      {lastEmoji != null && <Text style={styles.emoji}>{lastEmoji}</Text>}
 
       <Text style={styles.status}>Keyboard: {status}</Text>
 
       <View style={styles.buttonRow}>
-        <Button
-          title="Pick emoji"
-          onPress={() => pickerRef.current?.focus()}
-        />
-        <Button
-          title="Dismiss"
-          onPress={() => pickerRef.current?.blur()}
-        />
+        <Button title="Pick emoji" onPress={() => pickerRef.current?.focus()} />
+        <Button title="Dismiss" onPress={() => pickerRef.current?.blur()} />
       </View>
 
       <SystemEmojiPicker
         ref={pickerRef}
-        onEmojiSelected={(emoji) => {
+        onEmojiSelected={emoji => {
           console.log('Selected emoji:', emoji);
           setLastEmoji(emoji);
         }}
