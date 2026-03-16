@@ -1,0 +1,47 @@
+{
+  "name": "react-native-system-emoji-picker",
+  "version": "1.0.0",
+  "description": "React Native component that exposes the native iOS system emoji keyboard",
+  "author": "Let Aurn <let.aurn@gmail.com>",
+  "main": "src/index",
+  "types": "src/index",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "ios",
+    "react-native-system-emoji-picker.podspec",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.{ts,tsx}\""
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "emoji",
+    "picker",
+    "keyboard"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/let-aurn/react-native-system-emoji-picker.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/let-aurn/react-native-system-emoji-picker/issues"
+  },
+  "homepage": "https://github.com/let-aurn/react-native-system-emoji-picker#readme",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "typescript": "^5.0.0"
+  }
+}
