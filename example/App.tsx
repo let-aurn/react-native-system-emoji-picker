@@ -1,44 +1,58 @@
-import React, {useRef, useState} from 'react';
-import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {
+  Button,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   SystemEmojiPicker,
-  SystemEmojiPickerHandle,
+  useEmojiKeyboard,
 } from 'react-native-system-emoji-picker';
 
 export default function App() {
-  const pickerRef = useRef<SystemEmojiPickerHandle>(null);
+  const emojiKeyboard = useEmojiKeyboard();
   const [lastEmoji, setLastEmoji] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('closed');
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>react-native-system-emoji-picker</Text>
+      <KeyboardAvoidingView
+        style={styles.inner}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}>
+        <Text style={styles.title}>react-native-system-emoji-picker</Text>
 
-      {lastEmoji != null && <Text style={styles.emoji}>{lastEmoji}</Text>}
+        {lastEmoji != null && <Text style={styles.emoji}>{lastEmoji}</Text>}
 
-      <Text style={styles.status}>Keyboard: {status}</Text>
+        <Text style={styles.status}>Keyboard: {status}</Text>
 
-      <View style={styles.buttonRow}>
-        <Button title="Pick emoji" onPress={() => pickerRef.current?.focus()} />
-        <Button title="Dismiss" onPress={() => pickerRef.current?.blur()} />
-      </View>
+        <View style={styles.buttonRow}>
+          <Button title="Pick emoji" onPress={emojiKeyboard.open} />
+          <Button title="Dismiss" onPress={emojiKeyboard.dismiss} />
+        </View>
 
-      <SystemEmojiPicker
-        ref={pickerRef}
-        onEmojiSelected={emoji => {
-          console.log('Selected emoji:', emoji);
-          setLastEmoji(emoji);
-        }}
-        onOpen={() => {
-          console.log('Emoji keyboard opened');
-          setStatus('open');
-        }}
-        onClose={() => {
-          console.log('Emoji keyboard closed');
-          setStatus('closed');
-        }}
-        autoHideAfterSelection
-      />
+        <SystemEmojiPicker
+          ref={emojiKeyboard.ref}
+          onEmojiSelected={emoji => {
+            console.log('Selected emoji:', emoji);
+            setLastEmoji(emoji);
+          }}
+          onOpen={() => {
+            console.log('Emoji keyboard opened');
+            setStatus('open');
+          }}
+          onClose={() => {
+            console.log('Emoji keyboard closed');
+            setStatus('closed');
+          }}
+          autoHideAfterSelection
+          dismissOnTapOutside
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -46,9 +60,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  inner: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   title: {
     fontSize: 18,

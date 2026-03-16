@@ -34,6 +34,7 @@ interface NativeSystemEmojiPickerProps {
   onOpen?: (event: { nativeEvent: Record<string, never> }) => void;
   onClose?: (event: { nativeEvent: Record<string, never> }) => void;
   autoHideAfterSelection?: boolean;
+  dismissOnTapOutside?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -65,6 +66,12 @@ export interface SystemEmojiPickerProps {
   autoHideAfterSelection?: boolean;
 
   /**
+   * When `true`, tapping anywhere outside the emoji keyboard dismisses it.
+   * Defaults to `false`.
+   */
+  dismissOnTapOutside?: boolean;
+
+  /**
    * Optional style overrides.  The component renders with zero dimensions by
    * default so that it does not affect layout.
    */
@@ -72,13 +79,14 @@ export interface SystemEmojiPickerProps {
 }
 
 /**
- * Imperative handle returned by `useRef<SystemEmojiPickerHandle>()`.
+ * Imperative handle returned by `useRef<SystemEmojiPickerHandle>()` or
+ * by the `useEmojiKeyboard` hook.
  */
 export interface SystemEmojiPickerHandle {
   /** Opens the emoji keyboard. */
-  focus: () => void;
+  open: () => void;
   /** Dismisses the emoji keyboard (if visible). */
-  blur: () => void;
+  dismiss: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -97,7 +105,8 @@ if (Platform.OS === 'ios') {
 // Helper: dispatch a ViewManager command to the native view
 // ---------------------------------------------------------------------------
 function dispatchCommand(handle: number, commandName: string): void {
-  // getViewManagerConfig returns `{ Commands: { focus: 0, blur: 1, ... }, ... }`
+  // getViewManagerConfig returns `{ Commands: { focus: 0, blur: 1, … }, … }`
+  // The native commands are still named 'focus'/'blur'; JS exposes them as open/dismiss.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mgr = UIManager as any;
   const config =
@@ -125,12 +134,20 @@ function dispatchCommand(handle: number, commandName: string): void {
  * `SystemEmojiPicker` renders a zero-size hidden native view that manages a
  * `UITextField` configured to show the iOS system emoji keyboard.
  *
- * Control it imperatively via a ref:
+ * The recommended way to control it is via the `useEmojiKeyboard` hook:
+ *
+ * ```tsx
+ * const emojiKeyboard = useEmojiKeyboard();
+ * emojiKeyboard.open();    // opens the keyboard
+ * emojiKeyboard.dismiss(); // closes the keyboard
+ * ```
+ *
+ * You can also control it directly with a ref:
  *
  * ```tsx
  * const pickerRef = useRef<SystemEmojiPickerHandle>(null);
- * pickerRef.current?.focus(); // opens the keyboard
- * pickerRef.current?.blur();  // closes the keyboard
+ * pickerRef.current?.open();    // opens the keyboard
+ * pickerRef.current?.dismiss(); // closes the keyboard
  * ```
  *
  * **iOS only.** On Android the component renders `null` and emits a warning
@@ -140,8 +157,14 @@ const SystemEmojiPicker = forwardRef<
   SystemEmojiPickerHandle,
   SystemEmojiPickerProps
 >(function SystemEmojiPicker(props, ref) {
-  const { onEmojiSelected, onOpen, onClose, autoHideAfterSelection, style } =
-    props;
+  const {
+    onEmojiSelected,
+    onOpen,
+    onClose,
+    autoHideAfterSelection,
+    dismissOnTapOutside,
+    style,
+  } = props;
 
   const nativeRef = useRef<React.ElementRef<typeof View>>(null);
 
@@ -149,13 +172,13 @@ const SystemEmojiPicker = forwardRef<
   useImperativeHandle(
     ref,
     () => ({
-      focus() {
+      open() {
         if (Platform.OS !== 'ios') return;
         const handle = findNodeHandle(nativeRef.current);
         if (handle == null) return;
         dispatchCommand(handle, 'focus');
       },
-      blur() {
+      dismiss() {
         if (Platform.OS !== 'ios') return;
         const handle = findNodeHandle(nativeRef.current);
         if (handle == null) return;
@@ -210,6 +233,7 @@ const SystemEmojiPicker = forwardRef<
       onOpen={handleOpen}
       onClose={handleClose}
       autoHideAfterSelection={autoHideAfterSelection}
+      dismissOnTapOutside={dismissOnTapOutside}
     />
   );
 });

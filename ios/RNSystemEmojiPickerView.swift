@@ -44,9 +44,26 @@ public final class RNSystemEmojiPickerView: UIView {
   /// When `true` the emoji keyboard is dismissed automatically after selection.
   @objc public var autoHideAfterSelection: Bool = false
 
+  /// When `true`, taps in the host window outside the system keyboard dismiss it.
+  @objc public var dismissOnTapOutside: Bool = false {
+    didSet {
+      updateOutsideTapGestureIfNeeded()
+    }
+  }
+
   // MARK: - Private state
 
   private let textField = UITextField()
+  private lazy var outsideTapGestureRecognizer: UITapGestureRecognizer = {
+    let recognizer = UITapGestureRecognizer(
+      target: self,
+      action: #selector(handleOutsideTap(_:))
+    )
+    recognizer.cancelsTouchesInView = false
+    return recognizer
+  }()
+  private weak var outsideTapGestureView: UIView?
+  private var isKeyboardVisible = false
 
   // MARK: - Init
 
@@ -62,7 +79,13 @@ public final class RNSystemEmojiPickerView: UIView {
   }
 
   deinit {
+    removeOutsideTapGestureIfNeeded()
     NotificationCenter.default.removeObserver(self)
+  }
+
+  public override func didMoveToWindow() {
+    super.didMoveToWindow()
+    updateOutsideTapGestureIfNeeded()
   }
 
   // MARK: - Setup
@@ -112,6 +135,7 @@ public final class RNSystemEmojiPickerView: UIView {
 
   /// Dismisses the emoji keyboard.
   @objc public func blur() {
+    removeOutsideTapGestureIfNeeded()
     textField.resignFirstResponder()
   }
 
@@ -121,12 +145,44 @@ public final class RNSystemEmojiPickerView: UIView {
     // Only fire if *our* text field is the active responder, not some other
     // input elsewhere in the app.
     guard textField.isFirstResponder else { return }
+    isKeyboardVisible = true
+    updateOutsideTapGestureIfNeeded()
     onOpen?([:] as NSDictionary)
   }
 
   @objc private func keyboardWillHide(_ notification: Notification) {
-    guard textField.isFirstResponder else { return }
+    guard isKeyboardVisible || textField.isFirstResponder else { return }
+    isKeyboardVisible = false
+    removeOutsideTapGestureIfNeeded()
     onClose?([:] as NSDictionary)
+  }
+
+  @objc private func handleOutsideTap(_ recognizer: UITapGestureRecognizer) {
+    guard recognizer.state == .ended, dismissOnTapOutside, isKeyboardVisible else {
+      return
+    }
+
+    blur()
+  }
+
+  private func updateOutsideTapGestureIfNeeded() {
+    guard dismissOnTapOutside, isKeyboardVisible else {
+      removeOutsideTapGestureIfNeeded()
+      return
+    }
+
+    guard let hostView = window else { return }
+
+    if outsideTapGestureView !== hostView {
+      removeOutsideTapGestureIfNeeded()
+      hostView.addGestureRecognizer(outsideTapGestureRecognizer)
+      outsideTapGestureView = hostView
+    }
+  }
+
+  private func removeOutsideTapGestureIfNeeded() {
+    outsideTapGestureView?.removeGestureRecognizer(outsideTapGestureRecognizer)
+    outsideTapGestureView = nil
   }
 }
 

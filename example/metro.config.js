@@ -13,14 +13,14 @@ const workspaceRoot = path.resolve(projectRoot, '..');
 const config = {
   watchFolders: [workspaceRoot],
   resolver: {
-	unstable_enableSymlinks: true,
-	disableHierarchicalLookup: true,
-	nodeModulesPaths: [path.resolve(projectRoot, 'node_modules')],
-	extraNodeModules: {
-	  'react-native-system-emoji-picker': workspaceRoot,
-	  react: path.resolve(projectRoot, 'node_modules/react'),
-	  'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
-	},
+    unstable_enableSymlinks: true,
+    disableHierarchicalLookup: true,
+    nodeModulesPaths: [path.resolve(projectRoot, 'node_modules')],
+    extraNodeModules: {
+      'react-native-system-emoji-picker': workspaceRoot,
+      react: path.resolve(projectRoot, 'node_modules/react'),
+      'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
+    },
   },
 };
 

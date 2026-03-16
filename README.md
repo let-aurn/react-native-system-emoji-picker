@@ -35,6 +35,43 @@ use_frameworks! :linkage => :static   # optional, but required for Swift pods in
 
 ## Usage
 
+### With `useEmojiKeyboard` hook (recommended)
+
+```tsx
+import React, { useState } from 'react';
+import { Button, KeyboardAvoidingView, Platform, View } from 'react-native';
+import {
+  SystemEmojiPicker,
+  useEmojiKeyboard,
+} from 'react-native-system-emoji-picker';
+
+export default function App() {
+  const emojiKeyboard = useEmojiKeyboard();
+  const [emoji, setEmoji] = useState('');
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View>
+        <Button title="Pick emoji" onPress={emojiKeyboard.open} />
+        <Button title="Dismiss" onPress={emojiKeyboard.dismiss} />
+      </View>
+
+      <SystemEmojiPicker
+        ref={emojiKeyboard.ref}
+        onEmojiSelected={(e) => setEmoji(e)}
+        onOpen={() => console.log('Emoji keyboard opened')}
+        onClose={() => console.log('Emoji keyboard closed')}
+        autoHideAfterSelection
+        dismissOnTapOutside
+      />
+    </KeyboardAvoidingView>
+  );
+}
+```
+
+### With a ref directly
+
 ```tsx
 import React, { useRef } from 'react';
 import { Button, View } from 'react-native';
@@ -50,19 +87,13 @@ export default function App() {
     <View>
       <Button
         title="Pick emoji"
-        onPress={() => pickerRef.current?.focus()}
+        onPress={() => pickerRef.current?.open()}
       />
 
       <SystemEmojiPicker
         ref={pickerRef}
         onEmojiSelected={(emoji) => {
           console.log('Selected emoji:', emoji);
-        }}
-        onOpen={() => {
-          console.log('Emoji keyboard opened');
-        }}
-        onClose={() => {
-          console.log('Emoji keyboard closed');
         }}
         autoHideAfterSelection
       />
@@ -75,24 +106,40 @@ export default function App() {
 
 ## API
 
+### `useEmojiKeyboard()`
+
+A hook that creates and manages a ref for `<SystemEmojiPicker>` and returns an
+`EmojiKeyboardController` with clean `open` / `dismiss` methods.
+
+```tsx
+const emojiKeyboard = useEmojiKeyboard();
+
+emojiKeyboard.open();    // opens the emoji keyboard
+emojiKeyboard.dismiss(); // closes the emoji keyboard
+
+// Pass the ref to SystemEmojiPicker:
+<SystemEmojiPicker ref={emojiKeyboard.ref} />
+```
+
 ### `<SystemEmojiPicker>`
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `onEmojiSelected` | `(emoji: string) => void` | — | Fired each time the user selects an emoji. The `emoji` string may be a multi-codepoint sequence (family emoji, skin-tone variants, etc.). |
-| `onOpen` | `() => void` | — | Fired when the emoji keyboard appears. |
-| `onClose` | `() => void` | — | Fired when the emoji keyboard is dismissed. |
-| `autoHideAfterSelection` | `boolean` | `false` | Automatically dismiss the keyboard after an emoji is selected. |
-| `style` | `StyleProp<ViewStyle>` | — | Optional style overrides. The component renders with zero dimensions by default. |
+| Prop                     | Type                      | Default | Description                                                                                                                               |
+|--------------------------|---------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `onEmojiSelected`        | `(emoji: string) => void` | —       | Fired each time the user selects an emoji. The `emoji` string may be a multi-codepoint sequence (family emoji, skin-tone variants, etc.). |
+| `onOpen`                 | `() => void`              | —       | Fired when the emoji keyboard appears.                                                                                                    |
+| `onClose`                | `() => void`              | —       | Fired when the emoji keyboard is dismissed.                                                                                               |
+| `autoHideAfterSelection` | `boolean`                 | `false` | Automatically dismiss the keyboard after an emoji is selected.                                                                            |
+| `dismissOnTapOutside`    | `boolean`                 | `false` | Dismiss the keyboard when the user taps outside of it.                                                                                    |
+| `style`                  | `StyleProp<ViewStyle>`    | —       | Optional style overrides. The component renders with zero dimensions by default.                                                          |
 
 ### `SystemEmojiPickerHandle` (ref)
 
 ```ts
 interface SystemEmojiPickerHandle {
   /** Opens the emoji keyboard. */
-  focus: () => void;
+  open: () => void;
   /** Dismisses the emoji keyboard (if visible). */
-  blur: () => void;
+  dismiss: () => void;
 }
 ```
 
@@ -102,9 +149,10 @@ interface SystemEmojiPickerHandle {
 
 1. A hidden `UITextField` is added as a subview with a zero frame.
 2. Its `keyboardType` is set to `UIKeyboardType(rawValue: 124)` — a publicly accessible enum case that selects the emoji keyboard.
-3. Calling `focus()` makes the text field the first responder, which causes iOS to present the emoji keyboard.
+3. Calling `open()` makes the text field the first responder, which causes iOS to present the emoji keyboard.
 4. `UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)` intercepts each emoji tap and forwards it to JavaScript. The text field is always kept empty (the method returns `false`) so it behaves purely as a picker.
 5. `UIResponder.keyboardWillShow/Hide` notifications drive the `onOpen` / `onClose` events.
+6. When `dismissOnTapOutside` is `true` and the keyboard is open, a transparent full-screen overlay is shown. Tapping it calls `dismiss()`.
 
 ### What is NOT used
 
@@ -138,12 +186,12 @@ The only part of this library that could raise questions is the use of `UIKeyboa
 
 ### Summary
 
-| Check | Result |
-|---|---|
-| Private framework imports | ✅ None |
-| Private Objective-C selectors | ✅ None |
-| `dlopen` / `dlsym` / `NSSelectorFromString` | ✅ None |
-| Method swizzling | ✅ None |
+| Check                                                 | Result                                    |
+|-------------------------------------------------------|-------------------------------------------|
+| Private framework imports                             | ✅ None                                    |
+| Private Objective-C selectors                         | ✅ None                                    |
+| `dlopen` / `dlsym` / `NSSelectorFromString`           | ✅ None                                    |
+| Method swizzling                                      | ✅ None                                    |
 | `UIKeyboardType(rawValue: 124)` detectable by scanner | ✅ Not detectable — plain integer constant |
 
 ### Runtime risk (separate from App Store validation)
@@ -163,7 +211,7 @@ cd example
 npm install
 bundle install
 cd ios && bundle exec pod install && cd ..
-npm run ios   # or: npm run android
+npm run ios
 ```
 
 If you see `can't find gem cocoapods ... executable pod`, run `bundle install` in `example` and retry `bundle exec pod install`.
