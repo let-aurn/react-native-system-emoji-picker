@@ -62,6 +62,7 @@ export default function App() {
         onEmojiSelected={(e) => setEmoji(e)}
         onOpen={() => console.log('Emoji keyboard opened')}
         onClose={() => console.log('Emoji keyboard closed')}
+        keyboardAppearance="dark"
         autoHideAfterSelection
         dismissOnTapOutside
       />
@@ -95,6 +96,7 @@ export default function App() {
         onEmojiSelected={(emoji) => {
           console.log('Selected emoji:', emoji);
         }}
+        keyboardAppearance="light"
         autoHideAfterSelection
       />
     </View>
@@ -128,6 +130,7 @@ emojiKeyboard.dismiss(); // closes the emoji keyboard
 | `onEmojiSelected`        | `(emoji: string) => void` | —       | Fired each time the user selects an emoji. The `emoji` string may be a multi-codepoint sequence (family emoji, skin-tone variants, etc.). |
 | `onOpen`                 | `() => void`              | —       | Fired when the emoji keyboard appears.                                                                                                    |
 | `onClose`                | `() => void`              | —       | Fired when the emoji keyboard is dismissed.                                                                                               |
+| `keyboardAppearance`     | `'light' \| 'dark'`       | —       | Optional keyboard color scheme override. If omitted, iOS uses the system/default appearance.                                             |
 | `autoHideAfterSelection` | `boolean`                 | `false` | Automatically dismiss the keyboard after an emoji is selected.                                                                            |
 | `dismissOnTapOutside`    | `boolean`                 | `false` | Dismiss the keyboard when the user taps outside of it.                                                                                    |
 | `style`                  | `StyleProp<ViewStyle>`    | —       | Optional style overrides. The component renders with zero dimensions by default.                                                          |

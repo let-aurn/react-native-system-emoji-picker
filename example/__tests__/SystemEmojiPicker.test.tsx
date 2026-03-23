@@ -121,5 +121,21 @@ describe('SystemEmojiPicker', () => {
       );
       expect(nativeView.props.dismissOnTapOutside).toBe(true);
     });
+
+    it('passes keyboardAppearance="light" prop to native view', () => {
+      const instance = render(<SystemEmojiPicker keyboardAppearance="light" />);
+      const nativeView = instance.UNSAFE_root.find((n: NodeWithType) =>
+        isNativeViewType(n.type),
+      );
+      expect(nativeView.props.keyboardAppearance).toBe('light');
+    });
+
+    it('passes keyboardAppearance="dark" prop to native view', () => {
+      const instance = render(<SystemEmojiPicker keyboardAppearance="dark" />);
+      const nativeView = instance.UNSAFE_root.find((n: NodeWithType) =>
+        isNativeViewType(n.type),
+      );
+      expect(nativeView.props.keyboardAppearance).toBe('dark');
+    });
   });
 });

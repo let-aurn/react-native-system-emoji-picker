@@ -34,6 +34,7 @@ RCT_EXPORT_VIEW_PROPERTY(onOpen, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onClose, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(autoHideAfterSelection, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(dismissOnTapOutside, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(keyboardAppearance, NSString)
 
 RCT_EXPORT_METHOD(focus:(nonnull NSNumber *)reactTag)
 {

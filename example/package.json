@@ -5,6 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "ios:my-device": "npx react-native run-ios --device \"Let Aurn iPhone\"",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"

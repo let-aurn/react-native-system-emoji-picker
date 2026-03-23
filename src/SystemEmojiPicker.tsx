@@ -35,8 +35,11 @@ interface NativeSystemEmojiPickerProps {
   onClose?: (event: { nativeEvent: Record<string, never> }) => void;
   autoHideAfterSelection?: boolean;
   dismissOnTapOutside?: boolean;
+  keyboardAppearance?: KeyboardAppearance;
   style?: StyleProp<ViewStyle>;
 }
+
+export type KeyboardAppearance = 'light' | 'dark';
 
 /**
  * Public props for `<SystemEmojiPicker />`.
@@ -70,6 +73,11 @@ export interface SystemEmojiPickerProps {
    * Defaults to `false`.
    */
   dismissOnTapOutside?: boolean;
+
+  /**
+   * Optional keyboard color scheme. If omitted, iOS chooses the system default.
+   */
+  keyboardAppearance?: KeyboardAppearance;
 
   /**
    * Optional style overrides.  The component renders with zero dimensions by
@@ -163,6 +171,7 @@ const SystemEmojiPicker = forwardRef<
     onClose,
     autoHideAfterSelection,
     dismissOnTapOutside,
+    keyboardAppearance,
     style,
   } = props;
 
@@ -234,6 +243,7 @@ const SystemEmojiPicker = forwardRef<
       onClose={handleClose}
       autoHideAfterSelection={autoHideAfterSelection}
       dismissOnTapOutside={dismissOnTapOutside}
+      keyboardAppearance={keyboardAppearance}
     />
   );
 });

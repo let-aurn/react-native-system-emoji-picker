@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import {
+  KeyboardAppearance,
   SystemEmojiPicker,
   useEmojiKeyboard,
 } from 'react-native-system-emoji-picker';
@@ -17,26 +18,67 @@ export default function App() {
   const emojiKeyboard = useEmojiKeyboard();
   const [lastEmoji, setLastEmoji] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('closed');
+  const [keyboardAppearance, setKeyboardAppearance] =
+    useState<KeyboardAppearance>('light');
+  const isDarkMode = keyboardAppearance === 'dark';
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        isDarkMode ? styles.containerDark : styles.containerLight,
+      ]}>
       <KeyboardAvoidingView
-        style={styles.inner}
+        style={[
+          styles.inner,
+          isDarkMode ? styles.innerDark : styles.innerLight,
+        ]}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={0}>
-        <Text style={styles.title}>react-native-system-emoji-picker</Text>
+        <Text
+          style={[
+            styles.title,
+            isDarkMode ? styles.titleDark : styles.titleLight,
+          ]}>
+          react-native-system-emoji-picker
+        </Text>
 
         {lastEmoji != null && <Text style={styles.emoji}>{lastEmoji}</Text>}
 
-        <Text style={styles.status}>Keyboard: {status}</Text>
+        <Text
+          style={[
+            styles.status,
+            isDarkMode ? styles.statusDark : styles.statusLight,
+          ]}>
+          Keyboard: {status}
+        </Text>
+        <Text
+          style={[
+            styles.status,
+            isDarkMode ? styles.statusDark : styles.statusLight,
+          ]}>
+          Appearance: {keyboardAppearance}
+        </Text>
 
         <View style={styles.buttonRow}>
           <Button title="Pick emoji" onPress={emojiKeyboard.open} />
           <Button title="Dismiss" onPress={emojiKeyboard.dismiss} />
         </View>
 
+        <View style={styles.buttonRow}>
+          <Button
+            title="Keyboard in light mode"
+            onPress={() => setKeyboardAppearance('light')}
+          />
+          <Button
+            title="Keyboard in dark mode"
+            onPress={() => setKeyboardAppearance('dark')}
+          />
+        </View>
+
         <SystemEmojiPicker
           ref={emojiKeyboard.ref}
+          keyboardAppearance={keyboardAppearance}
           onEmojiSelected={emoji => {
             console.log('Selected emoji:', emoji);
             setLastEmoji(emoji);
@@ -60,12 +102,23 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerLight: {
     backgroundColor: '#fff',
+  },
+  containerDark: {
+    backgroundColor: '#111',
   },
   inner: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  innerLight: {
+    backgroundColor: '#fff',
+  },
+  innerDark: {
+    backgroundColor: '#111',
   },
   title: {
     fontSize: 18,
@@ -73,17 +126,29 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
   },
+  titleLight: {
+    color: '#111',
+  },
+  titleDark: {
+    color: '#f5f5f5',
+  },
   emoji: {
     fontSize: 72,
     marginBottom: 16,
   },
   status: {
     fontSize: 14,
-    color: '#666',
     marginBottom: 24,
   },
+  statusLight: {
+    color: '#666',
+  },
+  statusDark: {
+    color: '#ccc',
+  },
   buttonRow: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 16,
+    marginBottom: 16,
   },
 });

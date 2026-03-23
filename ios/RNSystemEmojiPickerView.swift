@@ -51,6 +51,13 @@ public final class RNSystemEmojiPickerView: UIView {
     }
   }
 
+  /// Optional keyboard appearance override (`"light"` | `"dark"`).
+  @objc public var keyboardAppearance: NSString? {
+    didSet {
+      applyKeyboardAppearance()
+    }
+  }
+
   // MARK: - Private state
 
   private let textField = UITextField()
@@ -92,6 +99,7 @@ public final class RNSystemEmojiPickerView: UIView {
 
   private func setUpTextField() {
     textField.keyboardType = RNSystemEmojiPickerView.emojiKeyboardType
+    applyKeyboardAppearance()
 
     textField.delegate = self
 
@@ -108,6 +116,26 @@ public final class RNSystemEmojiPickerView: UIView {
     textField.accessibilityElementsHidden = true
 
     addSubview(textField)
+  }
+
+  private func applyKeyboardAppearance() {
+    let appearance: UIKeyboardAppearance
+
+    switch keyboardAppearance?.lowercased {
+    case "light":
+      appearance = .light
+    case "dark":
+      appearance = .dark
+    default:
+      appearance = .default
+    }
+
+    textField.keyboardAppearance = appearance
+
+    // If appearance changes while open, refresh keyboard visuals immediately.
+    if textField.isFirstResponder {
+      textField.reloadInputViews()
+    }
   }
 
   private func setUpKeyboardObservers() {
