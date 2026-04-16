@@ -1,7 +1,7 @@
 {
   "name": "react-native-system-emoji-picker",
   "version": "1.1.0",
-  "description": "React Native component that exposes the native iOS system emoji keyboard",
+  "description": "React Native component that exposes the native system emoji picker on iOS and Android",
   "author": "Let Aurn <let.aurn@gmail.com>",
   "main": "src/index",
   "types": "src/index",
@@ -9,6 +9,7 @@
   "source": "src/index",
   "files": [
     "src",
+    "android",
     "ios",
     "react-native-system-emoji-picker.podspec",
     "!**/__tests__",
@@ -23,6 +24,7 @@
   "keywords": [
     "react-native",
     "ios",
+    "android",
     "emoji",
     "picker",
     "keyboard"

@@ -1,10 +1,10 @@
 # react-native-system-emoji-picker
 
-A React Native component that opens the **native iOS system emoji keyboard** and returns the selected emoji through a simple event-driven API.
+A React Native component that opens the **native system emoji picker** and returns the selected emoji through a simple event-driven API.
 
-The picker is backed by a hidden `UITextField` configured to show the emoji keyboard (keyboard type raw value `124`). No private APIs or method swizzling are used.
+On iOS the picker is backed by a hidden `UITextField` configured to show the emoji keyboard (keyboard type raw value `124`). On Android it presents Jetpack's `EmojiPickerView` in a native dialog. No private APIs or method swizzling are used.
 
-> **Platform support:** iOS only. On Android the component renders `null` and emits a warning in development builds.
+> **Platform support:** iOS and Android.
 
 ---
 
@@ -30,6 +30,10 @@ Add the following to your `Podfile` if it isn't there already:
 ```ruby
 use_frameworks! :linkage => :static   # optional, but required for Swift pods in some setups
 ```
+
+### Android
+
+No extra setup is required beyond React Native autolinking. The Android library bundles `androidx.emoji2:emoji2-emojipicker` automatically.
 
 ---
 
@@ -130,7 +134,7 @@ emojiKeyboard.dismiss(); // closes the emoji keyboard
 | `onEmojiSelected`        | `(emoji: string) => void` | —       | Fired each time the user selects an emoji. The `emoji` string may be a multi-codepoint sequence (family emoji, skin-tone variants, etc.). |
 | `onOpen`                 | `() => void`              | —       | Fired when the emoji keyboard appears.                                                                                                    |
 | `onClose`                | `() => void`              | —       | Fired when the emoji keyboard is dismissed.                                                                                               |
-| `keyboardAppearance`     | `'light' \| 'dark'`       | —       | Optional keyboard color scheme override. If omitted, iOS uses the system/default appearance.                                             |
+| `keyboardAppearance`     | `'light' \| 'dark'`       | —       | Optional picker color scheme override. On iOS it controls the keyboard appearance. On Android it controls the dialog theme and surface.   |
 | `autoHideAfterSelection` | `boolean`                 | `false` | Automatically dismiss the keyboard after an emoji is selected.                                                                            |
 | `dismissOnTapOutside`    | `boolean`                 | `false` | Dismiss the keyboard when the user taps outside of it.                                                                                    |
 | `style`                  | `StyleProp<ViewStyle>`    | —       | Optional style overrides. The component renders with zero dimensions by default.                                                          |
@@ -150,12 +154,24 @@ interface SystemEmojiPickerHandle {
 
 ## How it works
 
+### iOS
+
 1. A hidden `UITextField` is added as a subview with a zero frame.
 2. Its `keyboardType` is set to `UIKeyboardType(rawValue: 124)` — a publicly accessible enum case that selects the emoji keyboard.
 3. Calling `open()` makes the text field the first responder, which causes iOS to present the emoji keyboard.
 4. `UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)` intercepts each emoji tap and forwards it to JavaScript. The text field is always kept empty (the method returns `false`) so it behaves purely as a picker.
 5. `UIResponder.keyboardWillShow/Hide` notifications drive the `onOpen` / `onClose` events.
 6. When `dismissOnTapOutside` is `true` and the keyboard is open, a transparent full-screen overlay is shown. Tapping it calls `dismiss()`.
+
+### Android
+
+1. A hidden native anchor view is mounted in the React Native tree.
+2. Calling `open()` shows a bottom-anchored native dialog.
+3. The dialog hosts Jetpack's `EmojiPickerView` from `androidx.emoji2:emoji2-emojipicker`.
+4. When the recent list is empty, the Android wrapper hides the placeholder recent section so the picker opens directly on the standard categories.
+5. The dialog surface follows light and dark mode automatically, and `keyboardAppearance` can override it.
+6. When the user picks an emoji, the native view emits `onEmojiSelected` and optionally dismisses itself when `autoHideAfterSelection` is enabled.
+7. Dialog show and dismiss events drive `onOpen` and `onClose`.
 
 ### What is NOT used
 

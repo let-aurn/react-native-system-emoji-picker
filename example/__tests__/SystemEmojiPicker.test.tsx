@@ -35,12 +35,24 @@ describe('SystemEmojiPicker', () => {
       Object.defineProperty(Platform, 'OS', {value: originalOS});
     });
 
-    it('renders null', () => {
-      // Suppress the expected dev warning for this test
-      const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const tree = render(<SystemEmojiPicker />);
-      expect(tree.toJSON()).toBeNull();
-      spy.mockRestore();
+    it('renders the native view', () => {
+      const instance = render(<SystemEmojiPicker />);
+      const nativeViews = instance.UNSAFE_root.findAll((n: NodeWithType) =>
+        isNativeViewType(n.type),
+      );
+      expect(nativeViews.length).toBeGreaterThan(0);
+    });
+
+    it('calls onEmojiSelected with the emoji string', () => {
+      const onEmojiSelected = jest.fn();
+      const instance = render(
+        <SystemEmojiPicker onEmojiSelected={onEmojiSelected} />,
+      );
+      const nativeView = instance.UNSAFE_root.find((n: NodeWithType) =>
+        isNativeViewType(n.type),
+      );
+      nativeView.props.onEmojiSelected?.({nativeEvent: {emoji: '🎉'}});
+      expect(onEmojiSelected).toHaveBeenCalledWith('🎉');
     });
   });
 

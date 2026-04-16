@@ -67,11 +67,11 @@ export default function App() {
 
         <View style={styles.buttonRow}>
           <Button
-            title="Keyboard in light mode"
+            title="Light mode"
             onPress={() => setKeyboardAppearance('light')}
           />
           <Button
-            title="Keyboard in dark mode"
+            title="Dark mode"
             onPress={() => setKeyboardAppearance('dark')}
           />
         </View>
@@ -84,11 +84,11 @@ export default function App() {
             setLastEmoji(emoji);
           }}
           onOpen={() => {
-            console.log('Emoji keyboard opened');
+            console.log('Emoji picker opened');
             setStatus('open');
           }}
           onClose={() => {
-            console.log('Emoji keyboard closed');
+            console.log('Emoji picker closed');
             setStatus('closed');
           }}
           autoHideAfterSelection
@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
   emoji: {
     fontSize: 72,
     marginBottom: 16,
+    color: 'white',
   },
   status: {
     fontSize: 14,
@@ -150,5 +151,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 16,
     marginBottom: 16,
+    alignItems: 'stretch',
   },
 });

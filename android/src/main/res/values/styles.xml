@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RNSystemEmojiPickerDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/rn_system_emoji_picker_slide_in</item>
+        <item name="android:windowExitAnimation">@anim/rn_system_emoji_picker_slide_out</item>
+    </style>
+</resources>

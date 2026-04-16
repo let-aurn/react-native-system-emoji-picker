@@ -18,6 +18,9 @@ export interface EmojiKeyboardController {
 /**
  * Hook that provides a clean controller API for `<SystemEmojiPicker>`.
  *
+ * On iOS `open()` shows the system emoji keyboard.
+ * On Android `open()` shows the native emoji picker dialog.
+ *
  * @example
  * ```tsx
  * const emojiKeyboard = useEmojiKeyboard();

@@ -16,6 +16,9 @@ import {
   type HostComponent,
 } from 'react-native';
 
+const IS_SUPPORTED_PLATFORM =
+  Platform.OS === 'ios' || Platform.OS === 'android';
+
 // ---------------------------------------------------------------------------
 // Native component name – must match RCT_EXPORT_MODULE in the iOS ViewManager
 // ---------------------------------------------------------------------------
@@ -98,12 +101,12 @@ export interface SystemEmojiPickerHandle {
 }
 
 // ---------------------------------------------------------------------------
-// Lazy native component — only resolved on iOS
+// Lazy native component — only resolved on supported native platforms
 // ---------------------------------------------------------------------------
 
 let NativeView: HostComponent<NativeSystemEmojiPickerProps> | null = null;
 
-if (Platform.OS === 'ios') {
+if (IS_SUPPORTED_PLATFORM) {
   NativeView = requireNativeComponent<NativeSystemEmojiPickerProps>(
     NATIVE_VIEW_NAME,
   );
@@ -158,8 +161,8 @@ function dispatchCommand(handle: number, commandName: string): void {
  * pickerRef.current?.dismiss(); // closes the keyboard
  * ```
  *
- * **iOS only.** On Android the component renders `null` and emits a warning
- * in development builds.
+ * On iOS this opens the native emoji keyboard. On Android it opens the
+ * platform emoji picker in a native dialog.
  */
 const SystemEmojiPicker = forwardRef<
   SystemEmojiPickerHandle,
@@ -182,13 +185,13 @@ const SystemEmojiPicker = forwardRef<
     ref,
     () => ({
       open() {
-        if (Platform.OS !== 'ios') return;
+        if (!IS_SUPPORTED_PLATFORM) return;
         const handle = findNodeHandle(nativeRef.current);
         if (handle == null) return;
         dispatchCommand(handle, 'focus');
       },
       dismiss() {
-        if (Platform.OS !== 'ios') return;
+        if (!IS_SUPPORTED_PLATFORM) return;
         const handle = findNodeHandle(nativeRef.current);
         if (handle == null) return;
         dispatchCommand(handle, 'blur');
@@ -197,11 +200,10 @@ const SystemEmojiPicker = forwardRef<
     [],
   );
 
-  // Android: unsupported — render nothing and optionally warn
-  if (Platform.OS !== 'ios') {
+  if (!IS_SUPPORTED_PLATFORM) {
     if (__DEV__) {
       console.warn(
-        'react-native-system-emoji-picker: Android is not supported. ' +
+        'react-native-system-emoji-picker only supports iOS and Android. ' +
           'The <SystemEmojiPicker> component will render null.',
       );
     }
