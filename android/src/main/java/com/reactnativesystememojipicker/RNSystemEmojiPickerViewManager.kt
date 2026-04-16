@@ -53,6 +53,7 @@ class RNSystemEmojiPickerViewManager : SimpleViewManager<RNSystemEmojiPickerView
       .put(EVENT_OPEN, MapBuilder.of("registrationName", "onOpen"))
       .put(EVENT_CLOSE, MapBuilder.of("registrationName", "onClose"))
       .build()
+      .toMutableMap()
   }
 
   companion object {
